@@ -1,0 +1,13 @@
+svg{
+  border: 1px solid black;
+  margin:auto;
+}
+
+.pan text:hover{
+  cursor: pointer;
+}
+
+.pan text{
+  font-size: 23px;
+  font-weight: bold;
+}
