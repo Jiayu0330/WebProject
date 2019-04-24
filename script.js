@@ -198,6 +198,8 @@ var drawMap = function(geoData)
 
   //dragging the map
   var dragging = function(d) {
+    console.log("dragging!");
+    console.log(d3.event);
     var offset = projection.translate();
 
     offset[0] += d3.event.dx;
@@ -205,11 +207,11 @@ var drawMap = function(geoData)
 
     projection.translate(offset);
 
-    map.selectAll("path")
+    svg.selectAll("path")
        .transition()
        .attr("d", countryGenerator);
 
-    map.selectAll("#countryAbbrev")
+    svg.selectAll("#countryAbbrev")
        .transition()
        .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
        .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
@@ -223,9 +225,10 @@ var drawMap = function(geoData)
                .call(drag);
 
   map.append("rect")
-     .attr("x", 0)
-     .attr("y", 0)
-     .attr("width", screen.width)
-     .attr("height", screen.height)
-     .attr("opacity", 0);
+     .attr("x", panning)
+     .attr("y", panning)
+     .attr("width", screen.width - panning*2)
+     .attr("height", screen.height - panning*2)
+     .attr("opacity", 0)
+     .attr("cursor", "move");
 }
