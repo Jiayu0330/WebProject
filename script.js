@@ -73,7 +73,10 @@ var drawMap = function(geoData)
            .attr("d", countryGenerator)
            .attr("id", function(d) {return d.properties.name;})
            .attr("stroke", "black")
-           .attr("fill", "orange");
+           .attr("fill", "orange")
+           .on("click", function(d) {
+             console.log("halo");
+           })
 
   // d3.select("#United States")
   //   .attr("fill", "red");
@@ -198,8 +201,8 @@ var drawMap = function(geoData)
 
   //dragging the map
   var dragging = function(d) {
-    console.log("dragging!");
-    console.log(d3.event);
+    //console.log("dragging!");
+    //console.log(d3.event);
     var offset = projection.translate();
 
     offset[0] += d3.event.dx;
@@ -221,14 +224,57 @@ var drawMap = function(geoData)
                .on("drag", dragging);
 
   var map = svg.append("g")
-               .attr("id", "map")
+               .attr("id", "draggingMap")
                .call(drag);
 
   map.append("rect")
      .attr("x", panning)
      .attr("y", panning)
-     .attr("width", screen.width - panning*2)
-     .attr("height", screen.height - panning*2)
+     .attr("width", screen.width - panning * 2)
+     .attr("height", screen.height - panning * 2)
      .attr("opacity", 0)
      .attr("cursor", "move");
+
+  //zooming the map
+  var zooming = function(d) {
+    //console.log(d3.event.transform);
+
+    var offset = [d3.event.transform.x, d3.event.transform.y];
+
+    var newScale = d3.event.transform.k * 2000;
+
+    projection.translate(offset)
+              .scale(newScale);
+
+    svg.selectAll("path")
+       .transition()
+       .attr("d", countryGenerator);
+
+    svg.selectAll("#countryAbbrev")
+       .transition()
+       .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
+       .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
+  }
+
+  var zoom = d3.zoom()
+               .on("zoom", zooming);
+
+  var center = projection([30, 30]);
+  //console.log(center);
+
+  var map = svg.append("g")
+               .attr("id", "zoomingMap")
+               .call(zoom)
+               .call(zoom.transform, d3.zoomIdentity
+                   .translate(screen.width/2, screen.height/2 + 60)
+                   .scale(0.12)
+                   .translate(-center[0], -center[1]));
+
+  map.append("rect")
+     .attr("x", panning)
+     .attr("y", panning)
+     .attr("width", screen.width - panning * 2)
+     .attr("height", screen.height - panning * 2)
+     .attr("opacity", 0)
+     .attr("cursor", "move")
 }
