@@ -26,3 +26,13 @@ svg{
 	font-size: 22px;
   text-anchor: middle;
 }
+
+path:hover{
+  transform: scale(1);
+  stroke-width: 2px;
+  cursor: pointer;
+}
+
+svg text{
+  pointer-events: none;
+}

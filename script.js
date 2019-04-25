@@ -8,20 +8,20 @@ Promise.all([geoP, countriesP])
          var geoData = values[0];
          var countries = values[1];
 
-         console.log(geoData, countries);
+         console.log(geoData);
 
          var countriesDict = {}
          countries.forEach(function(country)
          {
-           countriesDict[country.CountryName] = country; //trim() gets rid of spaces
+           countriesDict[country.CountryCode] = country; //trim() gets rid of spaces
          })
 
          geoData.features.forEach(function(feature)
          {
-           feature.properties.peopleUsingInternet = countriesDict[feature.properties.name_sort];
+           feature.properties.peopleUsingInternet = countriesDict[feature.properties.brk_a3];
          })
 
-         console.log(countriesDict);
+         //console.log(countriesDict);
 
          drawMap(geoData);
        })
@@ -71,19 +71,70 @@ var drawMap = function(geoData)
 
   countries.append("path")
            .attr("d", countryGenerator)
-           .attr("id", function(d) {return d.properties.name;})
+           .attr("id", function(d) {return d.properties.brk_a3;})
            .attr("stroke", "black")
-           .attr("fill", "orange");
+           .attr("fill", "orange")
+           .on("mouseover", function(d, i) {
+             // var path = d3.select(this)._groups[0][0];
+             // console.log(path);
+             svg.append("g")
+                .append("text")
+                .attr("id", "text" + i)
+                .attr("x", countryGenerator.centroid(d)[0] - countryGenerator.centroid(d)[0] * 0.02)
+                .attr("y", countryGenerator.centroid(d)[1] + countryGenerator.centroid(d)[1] * 0.02)
+                .text(d.properties.name);
+           })
+           .on("mouseout", function(d, i) {
+             d3.select("#text" + i).remove();
+           });
 
-  // d3.select("#United States")
-  //   .attr("fill", "red");
+  var color = d3.scaleQuantize()
+                .range(["#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a"])
+                .domain([0, 100]);
 
-  countries.append("text")
-           .attr("id", "countryAbbrev")
-           .text(function(d) {return d.properties.abbrev;})
-           .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
-           .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
-           .attr("font-size", "14px");
+  var mapped = geoData.features.map(function(d) {
+    return d.properties.peopleUsingInternet;
+  });
+  //console.log("mapped array:", mapped);
+
+  d3.select("#CHN")
+    .on("click", function() {
+      animation(mapped);
+    })
+
+  var animation = function(mapped) {
+    //console.log(mapped.length);
+    //console.log(geoData);
+    for (var i = 0; i < 27; i++) {
+      for (var j = 0; j < 175; j++) {
+        var baseYear = 1990;
+        if (mapped[j] == undefined) {
+          //do nothing
+        }
+        else {
+          var countryId = "#" + mapped[j].CountryCode;
+          d3.select(countryId)
+            .attr("fill", function() {
+              // var baseYear = 1990;
+              // var currentYear = baseYear + i;
+              // currentYear = "Y" + currentYear.toString();
+              if (i = 0) {
+                var value = mapped[j].Y1990;
+                console.log(value);
+              }
+              return "white";
+              // if (value == undefined) {
+              //   return "white";
+              // }
+              // else {
+              //   console.log(value);
+              //   return color(value);
+              // }
+            })
+        }
+      }
+    }
+  }
 
   //Panning the map
   var panning = 30;
@@ -190,10 +241,10 @@ var drawMap = function(geoData)
          .transition()
          .attr("d", countryGenerator);
 
-      svg.selectAll("#countryAbbrev")
-         .transition()
-         .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
-         .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
+      // svg.selectAll("#countryAbbrev")
+      //    .transition()
+      //    .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
+      //    .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
     });
 
   // //dragging the map
@@ -247,10 +298,10 @@ var drawMap = function(geoData)
        .transition()
        .attr("d", countryGenerator);
 
-    svg.selectAll("#countryAbbrev")
-       .transition()
-       .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
-       .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
+    // svg.selectAll("#countryAbbrev")
+    //    .transition()
+    //    .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
+    //    .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
   }
 
   var zoom = d3.zoom()
@@ -267,13 +318,13 @@ var drawMap = function(geoData)
                    .scale(0.12)
                    .translate(-center[0], -center[1]));
 
-  map.append("rect")
-     .attr("x", panning)
-     .attr("y", panning)
-     .attr("width", screen.width - panning * 2)
-     .attr("height", screen.height - panning * 2)
-     .attr("opacity", 0)
-     .attr("cursor", "move")
+  // map.append("rect")
+  //    .attr("x", panning)
+  //    .attr("y", panning)
+  //    .attr("width", screen.width - panning * 2)
+  //    .attr("height", screen.height - panning * 2)
+  //    .attr("opacity", 0)
+     //.attr("cursor", "move")
 
   //create zoom buttons
   //zoom in button
@@ -329,4 +380,6 @@ var drawMap = function(geoData)
       map.transition()
     		 .call(zoom.scaleBy, scaleFactor);
     })
+
+
 }
