@@ -67,16 +67,13 @@ var drawMap = function(geoData)
                   .data(geoData.features) //array
                   .enter()
                   .append("g")
-                  .classed("country", true)
+                  .classed("country", true);
 
   countries.append("path")
            .attr("d", countryGenerator)
            .attr("id", function(d) {return d.properties.name;})
            .attr("stroke", "black")
-           .attr("fill", "orange")
-           .on("click", function(d) {
-             console.log("halo");
-           })
+           .attr("fill", "orange");
 
   // d3.select("#United States")
   //   .attr("fill", "red");
@@ -86,7 +83,7 @@ var drawMap = function(geoData)
            .text(function(d) {return d.properties.abbrev;})
            .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
            .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
-           .attr("font-size", "14px")
+           .attr("font-size", "14px");
 
   //Panning the map
   var panning = 30;
@@ -101,12 +98,12 @@ var drawMap = function(geoData)
        .attr("width", screen.width)
        .attr("height", panning)
        .attr("fill", "grey")
-       .attr("opacity", 0.4)
+       .attr("opacity", 0.4);
 
   north.append("text")
        .attr("x", screen.width/2)
        .attr("y", panning - 10)
-       .html("&uarr;") //arrow
+       .html("&uarr;"); //arrow
 
   //down
   var south = svg.append("g")
@@ -119,12 +116,12 @@ var drawMap = function(geoData)
       .attr("width", screen.width)
       .attr("height", panning)
       .attr("fill", "grey")
-      .attr("opacity", 0.4)
+      .attr("opacity", 0.4);
 
   south.append("text")
       .attr("x", screen.width/2)
       .attr("y", screen.height - 10)
-      .html("&darr;") //arrow
+      .html("&darr;"); //arrow
 
   //west
   var west = svg.append("g")
@@ -137,12 +134,12 @@ var drawMap = function(geoData)
       .attr("width", panning)
       .attr("height", screen.height)
       .attr("fill", "grey")
-      .attr("opacity", 0.4)
+      .attr("opacity", 0.4);
 
   west.append("text")
-      .attr("x", 3)
+      .attr("x", 15)
       .attr("y", screen.height/2)
-      .html("&larr;") //arrow
+      .html("&larr;"); //arrow
 
   //east
   var east = svg.append("g")
@@ -155,12 +152,12 @@ var drawMap = function(geoData)
       .attr("width", panning)
       .attr("height", screen.height)
       .attr("fill", "grey")
-      .attr("opacity", 0.4)
+      .attr("opacity", 0.4);
 
   east.append("text")
-      .attr("x", screen.width - 27)
+      .attr("x", screen.width - 15)
       .attr("y", screen.height/2)
-      .html("&rarr;") //arrow
+      .html("&rarr;"); //arrow
 
   d3.selectAll(".pan")
     .on("click", function()
@@ -197,44 +194,44 @@ var drawMap = function(geoData)
          .transition()
          .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
          .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
-    })
+    });
 
-  //dragging the map
-  var dragging = function(d) {
-    //console.log("dragging!");
-    //console.log(d3.event);
-    var offset = projection.translate();
-
-    offset[0] += d3.event.dx;
-    offset[1] += d3.event.dy;
-
-    projection.translate(offset);
-
-    svg.selectAll("path")
-       .transition()
-       .attr("d", countryGenerator);
-
-    svg.selectAll("#countryAbbrev")
-       .transition()
-       .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
-       .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
-  }
-
-  var drag = d3.drag()
-               .on("drag", dragging);
-
-  var map = svg.append("g")
-               .attr("id", "draggingMap")
-               .call(drag);
-
-  map.append("rect")
-     .attr("x", panning)
-     .attr("y", panning)
-     .attr("width", screen.width - panning * 2)
-     .attr("height", screen.height - panning * 2)
-     .attr("opacity", 0)
-     .attr("cursor", "move");
-
+  // //dragging the map
+  // var dragging = function(d) {
+  //   //console.log("dragging!");
+  //   //console.log(d3.event);
+  //   var offset = projection.translate();
+  //
+  //   offset[0] += d3.event.dx;
+  //   offset[1] += d3.event.dy;
+  //
+  //   projection.translate(offset);
+  //
+  //   svg.selectAll("path")
+  //      .transition()
+  //      .attr("d", countryGenerator);
+  //
+  //   svg.selectAll("#countryAbbrev")
+  //      .transition()
+  //      .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
+  //      .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
+  // }
+  //
+  // var drag = d3.drag()
+  //              .on("drag", dragging);
+  //
+  // var map = svg.append("g")
+  //              .attr("id", "draggingMap")
+  //              .call(drag);
+  //
+  // map.append("rect")
+  //    .attr("x", panning)
+  //    .attr("y", panning)
+  //    .attr("width", screen.width - panning * 2)
+  //    .attr("height", screen.height - panning * 2)
+  //    .attr("opacity", 0)
+  //    .attr("cursor", "move");
+  //
   //zooming the map
   var zooming = function(d) {
     //console.log(d3.event.transform);
@@ -277,4 +274,59 @@ var drawMap = function(geoData)
      .attr("height", screen.height - panning * 2)
      .attr("opacity", 0)
      .attr("cursor", "move")
+
+  //create zoom buttons
+  //zoom in button
+  var zoomIn = svg.append("g")
+                  .attr("class", "zoom")
+                  .attr("id", "in")
+                  .attr("transform", "translate(" + (screen.width - 110) +"," + (screen.height - 70) + ")");
+
+  zoomIn.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 30)
+        .attr("height", 30);
+
+  zoomIn.append("text")
+        .attr("x", 15)
+        .attr("y", 22)
+        .text("+");
+
+  //zoom out button
+  var zoomOut = svg.append("g")
+                  .attr("class", "zoom")
+                  .attr("id", "out")
+                  .attr("transform", "translate(" + (screen.width - 70) +"," + (screen.height - 70) + ")");
+
+  zoomOut.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 30)
+        .attr("height", 30);
+
+  zoomOut.append("text")
+        .attr("x", 15)
+        .attr("y", 20)
+        .html("&ndash;");
+
+  d3.selectAll(".zoom")
+    .on("click", function() {
+      var scaleFactor;
+      var direction = d3.select(this).attr("id");
+
+      switch (direction) {
+              case "in":
+                      scaleFactor = 1.5;
+                      break;
+              case "out":
+                      scaleFactor = 0.75;
+                      break;
+              default:
+                      break;
+      }
+
+      map.transition()
+    		 .call(zoom.scaleBy, scaleFactor);
+    })
 }

@@ -3,11 +3,26 @@ svg{
   margin:auto;
 }
 
-.pan text:hover{
+.pan:hover, .zoom:hover{
   cursor: pointer;
 }
 
-.pan text{
-  font-size: 23px;
-  font-weight: bold;
+.pan rect:hover, .pan text:hover, .zoom rect:hover, .zoom text:hover{
+	fill: red;
+}
+
+.pan rect, .zoom rect {
+  fill: black;
+	opacity: 0.2;
+}
+
+.zoom rect {
+	rx: 5;
+	ry: 5;
+}
+
+.pan text, .zoom text {
+	fill: black;
+	font-size: 22px;
+  text-anchor: middle;
 }
