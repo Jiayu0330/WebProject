@@ -105,11 +105,11 @@ var drawMap = function(geoData)
         if (timesRun == 26) {
           clearInterval (interval);
         }
-        animation(mapped);
+        animation(mapped, timesRun);
       }, 500);
     })
 
-  var animation = function(mapped) {
+  var animation = function(mapped, timesRun) {
     var color = d3.scaleQuantize()
                   .range(["#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a"])
                   .domain([0, 100]);
