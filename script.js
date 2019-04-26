@@ -8,7 +8,7 @@ Promise.all([geoP, countriesP])
          var geoData = values[0];
          var countries = values[1];
 
-         console.log(geoData);
+         console.log("geoData:", geoData);
 
          var countriesDict = {}
          countries.forEach(function(country)
@@ -18,7 +18,7 @@ Promise.all([geoP, countriesP])
 
          geoData.features.forEach(function(feature)
          {
-           feature.properties.peopleUsingInternet = countriesDict[feature.properties.brk_a3];
+           feature.properties.peopleUsingInternet = countriesDict[feature.properties.iso_a3];
          })
 
          //console.log(countriesDict);
@@ -71,7 +71,7 @@ var drawMap = function(geoData)
 
   countries.append("path")
            .attr("d", countryGenerator)
-           .attr("id", function(d) {return d.properties.brk_a3;})
+           .attr("id", function(d) {return d.properties.iso_a3;})
            .attr("stroke", "black")
            .attr("fill", "white")
            .on("mouseover", function(d, i) {
@@ -82,7 +82,10 @@ var drawMap = function(geoData)
                 .attr("id", "text" + i)
                 .attr("x", countryGenerator.centroid(d)[0] - countryGenerator.centroid(d)[0] * 0.02)
                 .attr("y", countryGenerator.centroid(d)[1] + countryGenerator.centroid(d)[1] * 0.02)
-                .text(d.properties.name);
+                .text(d.properties.name)
+                .attr("font-weight", "bold")
+                .attr("font-size", 16)
+                .attr("font-family", "Georgia, serif")
            })
            .on("mouseout", function(d, i) {
              d3.select("#text" + i).remove();
@@ -91,6 +94,13 @@ var drawMap = function(geoData)
   // var color = d3.scaleQuantize()
   //               .range(["#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a"])
   //               .domain([0, 100]);
+
+  //year label
+  svg.append("text")
+     .attr("id", "year_label")
+     .attr("x", screen.width/2 - 65)
+     .attr("y", screen.height - 70)
+     .text("Before 1990")
 
   var mapped = geoData.features.map(function(d) {
     return d.properties.peopleUsingInternet;
@@ -101,50 +111,55 @@ var drawMap = function(geoData)
     .on("click", function() {
       var timesRun = 0;
       var interval = setInterval(function() {
+        animation(mapped, timesRun);
         timesRun += 1;
-        if (timesRun == 26) {
+        if (timesRun == 27) {
           clearInterval (interval);
         }
-        animation(mapped, timesRun);
       }, 500);
     })
 
   var animation = function(mapped, timesRun) {
     var color = d3.scaleQuantize()
-                  .range(["#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a"])
-                  .domain([0, 100]);
+                  .range(["#F9F0DE","#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a"])
+                  .domain([0, 98.4]);
     //console.log(mapped.length);
     //console.log(geoData);
     // for (var i = 0; i < 27; i++) {
     //   for (var j = 0; j < 175; j++) {
+    var baseYear = 1990;
+    var currentYear_i = baseYear + timesRun;
+    var currentYear = "Y" + currentYear_i.toString();
+
+    d3.select("#year_label")
+      .text(currentYear_i)
+      .attr("x", 575);
+
     for (var i = 0; i < 175; i++) {
       //console.log(mapped[i]);
-          if (mapped[i] == undefined) {
-            //do nothing
-          }
-          else {
-            var countryId = "#" + mapped[i].CountryCode;
-            d3.select(countryId)
-              .attr("fill", function() {
-                var baseYear = 1990;
-                var currentYear = baseYear + timesRun;
-                currentYear = "Y" + currentYear.toString();
-                var value = mapped[i][currentYear];
-                  //console.log(j, value);
-                if (value == undefined) {
-                  return "white";
-                }
-                else {
-                  //console.log(value);
-                  return color(value);
-                }
-              })
-              .transition()
-              .duration(600)
-          }
+      if (mapped[i] == undefined) {
+        //nothing
+      }
+      else {
+        var countryId = "#" + mapped[i].CountryCode;
+        d3.select(countryId)
+          .attr("fill", function() {
+            var value = mapped[i][currentYear];
+            //console.log(i, value)
+            if (value == "") {
+              return "lightGrey";
+            }
+            else {
+              //console.log(value);
+              return color(value);
+            }
+          })
+          .transition()
+          .duration(1000)
+      }
     }
 
-        console.log(timesRun, i);
+        //console.log(timesRun, i);
     // }
   }
 
@@ -226,7 +241,7 @@ var drawMap = function(geoData)
     .on("click", function()
     {
       var offset = projection.translate(); //get current translation offset
-      var moveAmount = 50; //how much to move on each click
+      var moveAmount = 90; //how much to move on each click
       var direction = d3.select(this).attr("id"); //which Norway
 
       switch(direction)

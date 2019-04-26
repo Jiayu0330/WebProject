@@ -1,5 +1,5 @@
 svg{
-  border: 1px solid #931621;
+  border: 5px solid #931621;
   margin:auto;
   display: block;
 }
@@ -30,10 +30,16 @@ svg{
 
 path:hover{
   transform: scale(1);
-  stroke-width: 2px;
+  stroke-width: 2.5px;
   cursor: pointer;
 }
 
 svg text{
   pointer-events: none;
+}
+
+#year_label {
+  font-size: 22px;
+  font-weight: bold;
+  font-family: Georgia, serif;
 }
