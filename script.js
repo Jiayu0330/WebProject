@@ -73,7 +73,7 @@ var drawMap = function(geoData)
            .attr("d", countryGenerator)
            .attr("id", function(d) {return d.properties.brk_a3;})
            .attr("stroke", "black")
-           .attr("fill", "orange")
+           .attr("fill", "white")
            .on("mouseover", function(d, i) {
              // var path = d3.select(this)._groups[0][0];
              // console.log(path);
@@ -88,9 +88,9 @@ var drawMap = function(geoData)
              d3.select("#text" + i).remove();
            });
 
-  var color = d3.scaleQuantize()
-                .range(["#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a"])
-                .domain([0, 100]);
+  // var color = d3.scaleQuantize()
+  //               .range(["#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a"])
+  //               .domain([0, 100]);
 
   var mapped = geoData.features.map(function(d) {
     return d.properties.peopleUsingInternet;
@@ -99,41 +99,53 @@ var drawMap = function(geoData)
 
   d3.select("#CHN")
     .on("click", function() {
-      animation(mapped);
+      var timesRun = 0;
+      var interval = setInterval(function() {
+        timesRun += 1;
+        if (timesRun == 26) {
+          clearInterval (interval);
+        }
+        animation(mapped);
+      }, 500);
     })
 
   var animation = function(mapped) {
+    var color = d3.scaleQuantize()
+                  .range(["#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a"])
+                  .domain([0, 100]);
     //console.log(mapped.length);
     //console.log(geoData);
-    for (var i = 0; i < 27; i++) {
-      for (var j = 0; j < 175; j++) {
-        var baseYear = 1990;
-        if (mapped[j] == undefined) {
-          //do nothing
-        }
-        else {
-          var countryId = "#" + mapped[j].CountryCode;
-          d3.select(countryId)
-            .attr("fill", function() {
-              // var baseYear = 1990;
-              // var currentYear = baseYear + i;
-              // currentYear = "Y" + currentYear.toString();
-              if (i = 0) {
-                var value = mapped[j].Y1990;
-                console.log(value);
-              }
-              return "white";
-              // if (value == undefined) {
-              //   return "white";
-              // }
-              // else {
-              //   console.log(value);
-              //   return color(value);
-              // }
-            })
-        }
-      }
+    // for (var i = 0; i < 27; i++) {
+    //   for (var j = 0; j < 175; j++) {
+    for (var i = 0; i < 175; i++) {
+      //console.log(mapped[i]);
+          if (mapped[i] == undefined) {
+            //do nothing
+          }
+          else {
+            var countryId = "#" + mapped[i].CountryCode;
+            d3.select(countryId)
+              .attr("fill", function() {
+                var baseYear = 1990;
+                var currentYear = baseYear + timesRun;
+                currentYear = "Y" + currentYear.toString();
+                var value = mapped[i][currentYear];
+                  //console.log(j, value);
+                if (value == undefined) {
+                  return "white";
+                }
+                else {
+                  //console.log(value);
+                  return color(value);
+                }
+              })
+              .transition()
+              .duration(600)
+          }
     }
+
+        console.log(timesRun, i);
+    // }
   }
 
   //Panning the map
