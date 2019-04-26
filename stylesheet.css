@@ -1,6 +1,7 @@
 svg{
-  border: 1px solid black;
+  border: 1px solid #931621;
   margin:auto;
+  display: block;
 }
 
 .pan:hover, .zoom:hover{
@@ -8,11 +9,11 @@ svg{
 }
 
 .pan rect:hover, .pan text:hover, .zoom rect:hover, .zoom text:hover{
-	fill: red;
+	opacity: 0.4;
 }
 
 .pan rect, .zoom rect {
-  fill: black;
+  fill: #931621;
 	opacity: 0.2;
 }
 
