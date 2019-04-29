@@ -8,11 +8,12 @@ svg{
   cursor: pointer;
 }
 
-.pan rect:hover, .pan text:hover, .zoom rect:hover, .zoom text:hover{
+.pan rect:hover, .zoom rect:hover, .zoom text:hover{
 	opacity: 0.4;
+  transition: 0.08s;
 }
 
-.pan rect, .zoom rect {
+.zoom rect {
   fill: #931621;
 	opacity: 0.2;
 }
@@ -22,14 +23,13 @@ svg{
 	ry: 5;
 }
 
-.pan text, .zoom text {
+.zoom text {
 	fill: black;
 	font-size: 22px;
   text-anchor: middle;
 }
 
 path:hover{
-  transform: scale(1);
   stroke-width: 2.5px;
   cursor: pointer;
 }
@@ -42,4 +42,25 @@ svg text{
   font-size: 22px;
   font-weight: bold;
   font-family: Georgia, serif;
+}
+
+#play-button {
+  position: absolute;
+  top: 590px;
+  left: 130px;
+  background-color: #ead3d5;
+  padding-right: 26px;
+  border-radius: 6px;
+  border: none;
+  color: black;
+  font-weight: bold;
+  margin: 0;
+  padding: 0 12px;
+  width: 65px;
+  cursor: pointer;
+  height: 30px;
+}
+
+#play-button:hover {
+  background-color: #d8afb4;
 }
