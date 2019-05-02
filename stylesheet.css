@@ -2,19 +2,19 @@ svg{
   border: 5px solid #931621;
   margin:auto;
   display: block;
-  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-.pan:hover, .zoom:hover{
+.pan:hover, .zoom:hover, #play-button{
   cursor: pointer;
 }
 
-.pan rect:hover, .zoom rect:hover, .zoom text:hover{
+.pan rect:hover, .zoom rect:hover, .zoom text:hover, #play-button rect:hover, #play-button text:hover{
 	opacity: 0.4;
   transition: 0.08s;
 }
 
-.zoom rect {
+.zoom rect, #play-button rect {
   fill: #931621;
 	opacity: 0.2;
   rx: 5;
@@ -29,6 +29,7 @@ svg{
 
 path:hover{
   stroke-width: 2.5px;
+  cursor: pointer;
 }
 
 svg text{
@@ -41,29 +42,20 @@ svg text{
   font-family: Georgia, serif;
 }
 
-#play-button {
-  position: absolute;
-  top: 590px;
-  left: 130px;
-  background-color: #ead3d5;
-  padding-right: 26px;
-  border-radius: 5px;
-  border: none;
-  color: black;
-  font-weight: bold;
-  margin: 0;
-  padding: 0 12px;
-  width: 62px;
-  cursor: pointer;
-  height: 30px;
-  font-family: Georgia, serif;
-  font-size: 13px;
-}
-
 #play-button:hover {
   background-color: #d8afb4;
 }
 
-.circles {
-  cursor: pointer;
+.title {
+  font-size: 25px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 1%;
+}
+
+.info_box {
+  border: 1px solid grey;
+  position: relative;
+  top: -200px;
+  left: -520px;
 }

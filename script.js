@@ -96,6 +96,15 @@ var drawMap = function(geoData)
                 .attr("font-weight", "bold")
                 .attr("font-size", 16)
                 .attr("font-family", "Georgia, serif")
+
+             d3.select("#info_country")
+                .text(d.properties.name);
+
+             d3.select("#info_GDPcapita")
+               .text("$" + Math.round(d.properties.GDP.Y1989));
+
+             d3.select("#info_usage")
+               .text("No Data")
            })
            .on("mouseout", function(d, i) {
              d3.select("#text" + i).remove();
@@ -139,12 +148,17 @@ var drawMap = function(geoData)
            .attr("fill", "red")
            .attr("opacity", 0.4)
            // .on("mouseover", function(d, i) {
+           //   var coordinates= d3.mouse(this);
+           //   var x = coordinates[0];
+           //   var y = coordinates[1];
+           //
            //   svg.append("text")
            //      .attr("id", "circle" + i)
-           //      .attr("x", countryGenerator.centroid(d)[0])
-           //      .attr("y", countryGenerator.centroid(d)[1])
-           //      .text(d.properties.name + ": " + Math.round(d.properties.GDP.Y1989) + "$")
+           //      .attr("x", x)
+           //      .attr("y", y)
+           //      .text(d.properties.name + ": $" + Math.round(d.properties.GDP.Y1989))
            //      .attr("font-style", "italic")
+           //      .attr("font-weight", "bold")
            //      .attr("font-size", 14)
            //      .attr("font-family", "Georgia, serif")
            // })
@@ -157,11 +171,27 @@ var drawMap = function(geoData)
   //               .domain([0, 100]);
 
   //year label
-  svg.append("text")
-     .attr("id", "year_label")
-     .attr("x", screen.width/2 - 68)
-     .attr("y", screen.height - 70)
-     .text("Before 1990")
+  // var zoomIn = svg.append("g")
+  //                 .attr("class", "zoom")
+  //                 .attr("id", "in")
+  //                 .attr("transform", "translate(" + (screen.width - 110) +"," + (screen.height - 70) + ")");
+  //
+  // zoomIn.append("rect")
+  //       .attr("x", 0)
+  //       .attr("y", 0)
+  //       .attr("width", 30)
+  //       .attr("height", 30);
+  //
+  // zoomIn.append("text")
+  //       .attr("x", 15)
+  //       .attr("y", 22)
+  //       .text("+");
+  var year = svg.append("g")
+                .attr("transform", "translate(" + (screen.width - 718) +"," + (screen.height - 70) + ")");
+
+  year.append("text")
+      .attr("id", "year_label")
+      .text("Before 1990");
 
   var mapped = geoData.features.map(function(d) {
     return d.properties.peopleUsingInternet;
@@ -174,16 +204,34 @@ var drawMap = function(geoData)
 
   var timesRun = 0;
 
+  var button = svg.append("g")
+                  .attr("id", "play-button")
+                  .attr("transform", "translate(" + (screen.width - 1250) +"," + (screen.height - 600) + ")");
+
+  button.append("rect")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", 60)
+        .attr("height", 30);
+
+  button.append("text")
+        .attr("id", "play-button-text")
+        .attr("x", 16)
+        .attr("y", 20)
+        .text("Play")
+        .attr("font-weight", "bold");
+
   d3.select("#play-button")
     .on("click", function() {
-      var button = d3.select(this);
+      var button = d3.select("#play-button-text");
       var year = d3.select("#year_label");
       if (year.text() == "2016") {
         timesRun = 0;
       }
       if (button.text() == "Pause") {
         clearInterval(timer);
-        button.text("Play");
+        button.text("Play")
+              .attr("x", 16);
       //   var baseYear = 1990;
       //   var currentYear_i = baseYear + timesRun;
       //   var currentYear = "Y" + currentYear_i.toString();
@@ -205,10 +253,12 @@ var drawMap = function(geoData)
           timesRun += 1;
           if (timesRun == 27) {
             clearInterval (timer);
-            button.text("Reset");
+            button.text("Replay")
+                  .attr("x", 7);
           }
         }, 500);
-        button.text("Pause");
+        button.text("Pause")
+              .attr("x", 11);
       }
     })
 
@@ -230,12 +280,12 @@ var drawMap = function(geoData)
 
     d3.select("#year_label")
       .text(currentYear_i)
-      .attr("x", 573);
+      .attr("x", "40");
 
     for (var i = 0; i < 175; i++) {
       //console.log(mapped[i]);
       if (mapped[i] == undefined || mapped2[i] == undefined) {
-        //nothing
+
       }
       else {
         var countryId = "#" + mapped[i].CountryCode;
@@ -247,10 +297,28 @@ var drawMap = function(geoData)
             //console.log(i, value)
             if (value == "") {
               return "lightGrey";
+              d3.select("#info_usage")
+                .text("undefined");
             }
             else {
               //console.log(value);
               return color(value);
+            }
+          })
+          .on("mouseover", function(d, i) {
+            d3.select("#info_country")
+               .text(d.properties.name);
+
+            d3.select("#info_GDPcapita")
+              .text("$" + Math.round(d.properties.GDP[currentYear]));
+
+            if (mapped[i][currentYear] == "") {
+              d3.select("#info_usage")
+                .text("undefined");
+            }
+            else {
+              d3.select("#info_usage")
+                .text(Math.round(d.properties.peopleUsingInternet[currentYear] * 100)/100 + "%");
             }
           })
           .transition()
@@ -268,24 +336,24 @@ var drawMap = function(geoData)
               return circleSize(value);
             }
           })
-          .on("mouseover", function(d, i) {
-            var coordinates= d3.mouse(this);
-            var x = coordinates[0];
-            var y = coordinates[1];
-
-            svg.append("text")
-               .attr("id", "circle" + i)
-               .attr("x", x)
-               .attr("y", y)
-               .text(d.properties.name + "(" + currentYear_i + ")" + ": " + Math.round(mapped2[i][currentYear]) + "$")
-               .attr("font-style", "italic")
-               .attr("font-weight", "bold")
-               .attr("font-size", 14)
-               .attr("font-family", "Georgia, serif")
-          })
-          .on("mouseout", function(d, i) {
-            d3.select("#circle" + i).remove();
-          })
+          // .on("mouseover", function(d, i) {
+          //   var coordinates= d3.mouse(this);
+          //   var x = coordinates[0];
+          //   var y = coordinates[1];
+          //
+          //   svg.append("text")
+          //      .attr("id", "circle" + i)
+          //      .attr("x", x)
+          //      .attr("y", y)
+          //      .text(d.properties.name + "(" + currentYear_i + ")" + ": $" + Math.round(d.properties.GDP[currentYear]))
+          //      .attr("font-style", "italic")
+          //      .attr("font-weight", "bold")
+          //      .attr("font-size", 14)
+          //      .attr("font-family", "Georgia, serif")
+          // })
+          // .on("mouseout", function(d, i) {
+          //   d3.select("#circle" + i).remove();
+          // })
           .transition()
           .duration(1000);
         //console.log("#circle" + i.toString())
@@ -300,6 +368,21 @@ var drawMap = function(geoData)
   }
 
   //legend
+  var legend_title = svg.append("g")
+                        .attr("class", "label");
+
+  legend_title.append("text")
+              .attr("x", 1165)
+              .attr("y", 68)
+              .text("% of People")
+              .attr("font-size", 14);
+
+  legend_title.append("text")
+              .attr("x", 1148)
+              .attr("y", 85)
+              .text("Using the Internet")
+              .attr("font-size", 14);
+
   var colorSet = ["#F9F0DE","#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a", "#d3d3d3"];
   var description = ["< 12.5","12.5 - 25","25 - 37.5","37.5 - 50", "50 - 62.5", "62.5 - 75", "75 - 87.5", "> 87.5", "Undefined"];
   var legend = svg.append("g")
@@ -309,8 +392,8 @@ var drawMap = function(geoData)
          .data(colorSet)
          .enter()
          .append("rect")
-         .attr("x", 1065)
-         .attr("y", function(d, i) {return 50 + i*20;})
+         .attr("x", 1165)
+         .attr("y", function(d, i) {return 100 + i*20;})
          .attr("width", 10)
          .attr("height", 10)
          .attr("fill", function(d) {return d;});
@@ -319,10 +402,62 @@ var drawMap = function(geoData)
         .data(description)
         .enter()
         .append("text")
-        .attr("x", 1085)
-        .attr("y", function(d, i) {return 60 + i*20})
+        .attr("x", 1185)
+        .attr("y", function(d, i) {return 110 + i*20})
         .text(function(d) {return d;})
         .attr("font-size", 14);
+
+  var info_box = d3.select("body").append("div").append("svg")
+      .attr('width', 180)
+      .attr('height', 150)
+      .attr('class', 'info_box')
+
+  var info_value = info_box.append("g");
+
+  info_value.append("text")
+            .attr("x", 5)
+            .attr("y", 15)
+            .text("Country:")
+            .attr("font-size", 14)
+
+  info_value.append("text")
+            .attr("x", 60)
+            .attr("y", 15)
+            .attr("id", "info_country")
+            .attr("font-size", 14)
+            .attr("text-decoration", "underline")
+
+  info_value.append("text")
+            .attr("x", 5)
+            .attr("y", 40)
+            .text("GDP per capita:")
+            .attr("font-size", 14)
+
+  info_value.append("text")
+            .attr("x", 100)
+            .attr("y", 40)
+            .attr("id", "info_GDPcapita")
+            .attr("font-size", 14)
+            .attr("text-decoration", "underline")
+
+  info_value.append("text")
+            .attr("x", 5)
+            .attr("y", 65)
+            .text("People Using the Internet:")
+            .attr("font-size", 14)
+
+  info_value.append("text")
+            .attr("x", 5)
+            .attr("y", 80)
+            .attr("id", "info_usage")
+            .attr("font-size", 14)
+            .attr("text-decoration", "underline")
+
+
+
+
+
+
 
 
   //Panning the map
