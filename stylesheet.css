@@ -56,6 +56,8 @@ svg text{
 .info_box {
   border: 1px solid grey;
   position: relative;
-  top: -200px;
-  left: -520px;
+  top: -188px;
+  /* left: -520px;  */
+  left: -483px;
+  padding: 2px;
 }

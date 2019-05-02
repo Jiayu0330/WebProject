@@ -32,7 +32,7 @@ Promise.all([geoP, countriesP, economyP])
            //feature.properties.centroids = centroidsDict[feature.properties.iso_a3];
          })
 
-         console.log(economyDict);
+         //console.log(economyDict);
 
          drawMap(geoData);
        })
@@ -80,6 +80,15 @@ var drawMap = function(geoData)
                   .append("g")
                   .classed("country", true);
 
+  // countries.append("text")
+  //          .attr("id", "text" + i)
+  //          .attr("x", countryGenerator.centroid(d)[0] - countryGenerator.centroid(d)[0] * 0.02)
+  //          .attr("y", countryGenerator.centroid(d)[1] + countryGenerator.centroid(d)[1] * 0.02)
+  //          .text(d.properties.name)
+  //          .attr("font-weight", "bold")
+  //          .attr("font-size", 16)
+  //          .attr("font-family", "Georgia, serif")
+
   countries.append("path")
            .attr("d", countryGenerator)
            .attr("id", function(d) {return d.properties.iso_a3;})
@@ -100,11 +109,30 @@ var drawMap = function(geoData)
              d3.select("#info_country")
                 .text(d.properties.name);
 
-             d3.select("#info_GDPcapita")
-               .text("$" + Math.round(d.properties.GDP.Y1989));
+             d3.select("#info_year")
+               .text("1989");
+
+            //console.log(d.properties.GDP);
+            if (d.properties.GDP == undefined || d.properties.GDP.Y1989 == "") {
+              d3.select("#info_GDPcapita")
+                .text("Undefined");
+            }
+            else {
+              d3.select("#info_GDPcapita")
+                .text("$" + Math.round(d.properties.GDP.Y1989));
+            }
 
              d3.select("#info_usage")
-               .text("No Data")
+               .text("Undefined");
+
+             if (d.properties.economy == "") {
+               d3.select("#info_economy")
+                 .text("Undefined");
+             }
+             else {
+               d3.select("#info_economy")
+                 .text(d.properties.economy);
+             }
            })
            .on("mouseout", function(d, i) {
              d3.select("#text" + i).remove();
@@ -132,7 +160,15 @@ var drawMap = function(geoData)
   // }
   var circleSize = d3.scaleLinear()
                      .domain([0, 185153])
-                     .range([0, 100]);
+                     .range([0, 120]);
+
+  countries.append("text")
+          .attr("id", function(d) {return "circle" + d.properties.iso_a3 + "Text";})
+          .text("")
+          .attr("font-style", "italic")
+          .attr("font-weight", "bold")
+          .attr("font-size", 14)
+          .attr("font-family", "Georgia, serif")
 
   countries.append("circle")
            .attr("class", "circles")
@@ -144,27 +180,51 @@ var drawMap = function(geoData)
              else {
                return circleSize(d.properties.GDP.Y1989);
              }
-           })
+           })//b9257a 5c53a5
            .attr("fill", "red")
-           .attr("opacity", 0.4)
-           // .on("mouseover", function(d, i) {
-           //   var coordinates= d3.mouse(this);
-           //   var x = coordinates[0];
-           //   var y = coordinates[1];
-           //
-           //   svg.append("text")
-           //      .attr("id", "circle" + i)
-           //      .attr("x", x)
-           //      .attr("y", y)
-           //      .text(d.properties.name + ": $" + Math.round(d.properties.GDP.Y1989))
-           //      .attr("font-style", "italic")
-           //      .attr("font-weight", "bold")
-           //      .attr("font-size", 14)
-           //      .attr("font-family", "Georgia, serif")
-           // })
-           // .on("mouseout", function(d, i) {
-           //   d3.select("#circle" + i).remove();
-           // });
+           .attr("opacity", 0.3)
+           .on("mouseover", function(d, i) {
+             var coordinates= d3.mouse(this);
+             var x = coordinates[0];
+             var y = coordinates[1];
+
+             d3.select("#circle" + d.properties.iso_a3 + "Text")
+                .attr("x", x)
+                .attr("y", y)
+                .text(d.properties.name + ": $" + Math.round(d.properties.GDP.Y1989));
+
+           //info_box
+            d3.select("#info_country")
+               .text(d.properties.name);
+
+            d3.select("#info_year")
+              .text("1989");
+
+           //console.log(d.properties.GDP);
+           if (d.properties.GDP.Y1989 == "") {
+             d3.select("#info_GDPcapita")
+               .text("Undefined");
+           }
+           else {
+             d3.select("#info_GDPcapita")
+               .text("$" + Math.round(d.properties.GDP.Y1989));
+           }
+
+            d3.select("#info_usage")
+              .text("Undefined");
+
+            if (d.properties.economy == "") {
+              d3.select("#info_economy")
+                .text("Undefined");
+            }
+            else {
+              d3.select("#info_economy")
+                .text(d.properties.economy);
+            }
+           })
+           .on("mouseout", function(d, i) {
+             d3.select("#circle" + d.properties.iso_a3 + "Text").text("");
+           });
 
   // var color = d3.scaleQuantize()
   //               .range(["#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a"])
@@ -200,7 +260,6 @@ var drawMap = function(geoData)
   var mapped2 = geoData.features.map(function(d) {
     return d.properties.GDP;
   });
-  //console.log("mapped array:", mapped2);
 
   var timesRun = 0;
 
@@ -264,12 +323,17 @@ var drawMap = function(geoData)
 
   var animation = function(mapped, mapped2, timesRun) {
     var color = d3.scaleQuantize()
+    //mint: "#e4f1e1","#b4d9cc","#89c0b6","#63a6a0","#448c8a","#287274","#0d585f"
+    //burg: "#F9F0DE","#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a"
+    //darkmint: "#d2fbd4","#a5dbc2","#7bbcb0","#559c9e","#3a7c89","#235d72","#123f5a"
+    //teal: "#d1eeea","#a8dbd9","#85c4c9","#68abb8","#4f90a6","#3b738f","#2a5674"
+    //redor: "#f6d2a9","#f5b78e","#f19c7c","#ea8171","#dd686c","#ca5268","#b13f64"
                   .range(["#F9F0DE","#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a"])
                   .domain([0, 100]);
 
     var circleSize = d3.scaleLinear()
                        .domain([0, 185153])
-                       .range([0, 100]);
+                       .range([0, 120]);
     //console.log(mapped.length);
     //console.log(geoData);
     // for (var i = 0; i < 27; i++) {
@@ -281,6 +345,79 @@ var drawMap = function(geoData)
     d3.select("#year_label")
       .text(currentYear_i)
       .attr("x", "40");
+
+    d3.select("#info_year")
+       .text(currentYear_i)
+       .transition();
+
+     // d3.selectAll("circle")
+     //   .on("mouseover", function(d, i) {
+     //     console.log("halo");
+     //     var coordinates= d3.mouse(this);
+     //     var x = coordinates[0];
+     //     var y = coordinates[1];
+     //
+     //       //console.log(d3.select(this));
+     //
+     //     // var circleId = d3.select(this).
+     //     //
+     //     // d3.select(this)
+     //     //   .attr("x", x)
+     //     //   .attr("y", y)
+     //     //   .text("$" + Math.round(mapped2[number2][currentYear]));
+     //   })
+
+     var current_country = d3.select("#info_country").text();
+     if (current_country != "") {
+       //console.log(current_country);
+       var found = false;
+       var found2 = false;
+        for(var i = 0; i < mapped.length; i++) {
+          if (mapped[i] != undefined) {
+            if (mapped[i].CountryName == current_country) {
+                found = true;
+                var number = i;
+                break;
+            }
+          }
+        }
+          for(var i = 0; i < mapped.length; i++) {
+            if (mapped2[i] != undefined) {
+              if (mapped2[i].CountryName == current_country) {
+                  found2 = true;
+                  var number2 = i;
+                  break;
+              }
+            }
+          }
+
+        if (mapped2[number2] != undefined) {
+          if (mapped2[number2][currentYear] == "") {
+            d3.select("#info_GDPcapita")
+              .text("Undefined");
+          }
+          else {d3.select("#info_GDPcapita").text("$" + Math.round(mapped2[number2][currentYear]));}
+        }
+        //else {d3.select("#info_usage").text("Undefined");}
+
+        if (mapped[number] != undefined) {
+          if (mapped[number][currentYear] == "") {
+            d3.select("#info_usage")
+              .text("Undefined");
+          }
+          else {d3.select("#info_usage").text(Math.round(mapped[number][currentYear] * 100)/100 + "%");}
+        }
+
+        // if (d.properties.economy == "") {
+        //   d3.select("#info_economy")
+        //     .text("Undefined");
+        // }
+        // else {
+        //   d3.select("#info_economy")
+        //     .text(d.properties.economy);
+        // }
+        //else {d3.select("#info_usage").text("Undefined");}
+     }
 
     for (var i = 0; i < 175; i++) {
       //console.log(mapped[i]);
@@ -297,8 +434,6 @@ var drawMap = function(geoData)
             //console.log(i, value)
             if (value == "") {
               return "lightGrey";
-              d3.select("#info_usage")
-                .text("undefined");
             }
             else {
               //console.log(value);
@@ -306,20 +441,47 @@ var drawMap = function(geoData)
             }
           })
           .on("mouseover", function(d, i) {
+            svg.append("text")
+               .attr("id", "text" + i)
+               .attr("x", countryGenerator.centroid(d)[0] - countryGenerator.centroid(d)[0] * 0.02)
+               .attr("y", countryGenerator.centroid(d)[1] + countryGenerator.centroid(d)[1] * 0.02)
+               .text(d.properties.name)
+               .attr("font-weight", "bold")
+               .attr("font-size", 16)
+               .attr("font-family", "Georgia, serif")
+
             d3.select("#info_country")
                .text(d.properties.name);
 
-            d3.select("#info_GDPcapita")
-              .text("$" + Math.round(d.properties.GDP[currentYear]));
-
-            if (mapped[i][currentYear] == "") {
+            if (d.properties.peopleUsingInternet[currentYear] == "") {
               d3.select("#info_usage")
-                .text("undefined");
+                .text("Undefined");
             }
             else {
               d3.select("#info_usage")
                 .text(Math.round(d.properties.peopleUsingInternet[currentYear] * 100)/100 + "%");
             }
+
+             if (d.properties.GDP[currentYear] == "") {
+               d3.select("#info_GDPcapita")
+                 .text("Undefined");
+             }
+             else {
+               d3.select("#info_GDPcapita")
+                 .text("$" + Math.round(d.properties.GDP[currentYear]));
+             }
+
+             if (d.properties.economy == "") {
+               d3.select("#info_economy")
+                 .text("Undefined");
+             }
+             else {
+               d3.select("#info_economy")
+                 .text(d.properties.economy);
+             }
+          })
+          .on("mouseout", function(d, i) {
+            d3.select("#text" + i).remove();
           })
           .transition()
           .duration(1000);
@@ -336,24 +498,55 @@ var drawMap = function(geoData)
               return circleSize(value);
             }
           })
-          // .on("mouseover", function(d, i) {
-          //   var coordinates= d3.mouse(this);
-          //   var x = coordinates[0];
-          //   var y = coordinates[1];
-          //
-          //   svg.append("text")
-          //      .attr("id", "circle" + i)
-          //      .attr("x", x)
-          //      .attr("y", y)
-          //      .text(d.properties.name + "(" + currentYear_i + ")" + ": $" + Math.round(d.properties.GDP[currentYear]))
-          //      .attr("font-style", "italic")
-          //      .attr("font-weight", "bold")
-          //      .attr("font-size", 14)
-          //      .attr("font-family", "Georgia, serif")
-          // })
-          // .on("mouseout", function(d, i) {
-          //   d3.select("#circle" + i).remove();
-          // })
+          .on("mouseover", function(d, i) {
+            var coordinates= d3.mouse(this);
+            var x = coordinates[0];
+            var y = coordinates[1];
+
+            svg.append("text")
+               .attr("id", "circle" + i)
+               .attr("x", x)
+               .attr("y", y)
+               .text(d.properties.name + ": $" + Math.round(d.properties.GDP[currentYear]))
+               .attr("font-style", "italic")
+               .attr("font-weight", "bold")
+               .attr("font-size", 14)
+               .attr("font-family", "Georgia, serif")
+
+           //info_box
+           d3.select("#info_country")
+              .text(d.properties.name);
+
+           if (d.properties.peopleUsingInternet[currentYear] == "") {
+             d3.select("#info_usage")
+               .text("Undefined");
+           }
+           else {
+             d3.select("#info_usage")
+               .text(Math.round(d.properties.peopleUsingInternet[currentYear] * 100)/100 + "%");
+           }
+
+            if (d.properties.GDP[currentYear] == "") {
+              d3.select("#info_GDPcapita")
+                .text("Undefined");
+            }
+            else {
+              d3.select("#info_GDPcapita")
+                .text("$" + Math.round(d.properties.GDP[currentYear]));
+            }
+
+            if (d.properties.economy == "") {
+              d3.select("#info_economy")
+                .text("Undefined");
+            }
+            else {
+              d3.select("#info_economy")
+                .text(d.properties.economy);
+            }
+          })
+          .on("mouseout", function(d, i) {
+            d3.select("#circle" + i).remove();
+          })
           .transition()
           .duration(1000);
         //console.log("#circle" + i.toString())
@@ -408,8 +601,8 @@ var drawMap = function(geoData)
         .attr("font-size", 14);
 
   var info_box = d3.select("body").append("div").append("svg")
-      .attr('width', 180)
-      .attr('height', 150)
+      .attr('width', 230)
+      .attr('height', 125)
       .attr('class', 'info_box')
 
   var info_value = info_box.append("g");
@@ -417,48 +610,67 @@ var drawMap = function(geoData)
   info_value.append("text")
             .attr("x", 5)
             .attr("y", 15)
+            .text("Year:")
+            .attr("font-size", 14)
+
+  info_value.append("text")
+            .attr("x", 40)
+            .attr("y", 15)
+            .attr("id", "info_year")
+            .attr("font-size", 14)
+            .attr("text-decoration", "underline")
+
+  info_value.append("text")
+            .attr("x", 5)
+            .attr("y", 40)
             .text("Country:")
             .attr("font-size", 14)
 
   info_value.append("text")
             .attr("x", 60)
-            .attr("y", 15)
+            .attr("y", 40)
             .attr("id", "info_country")
             .attr("font-size", 14)
             .attr("text-decoration", "underline")
 
   info_value.append("text")
             .attr("x", 5)
-            .attr("y", 40)
+            .attr("y", 65)
+            .text("Economy:")
+            .attr("font-size", 14)
+
+  info_value.append("text")
+            .attr("x", 68)
+            .attr("y", 65)
+            .attr("id", "info_economy")
+            .attr("font-size", 14)
+            .attr("text-decoration", "underline")
+
+  info_value.append("text")
+            .attr("x", 5)
+            .attr("y", 90)
             .text("GDP per capita:")
             .attr("font-size", 14)
 
   info_value.append("text")
             .attr("x", 100)
-            .attr("y", 40)
+            .attr("y", 90)
             .attr("id", "info_GDPcapita")
             .attr("font-size", 14)
             .attr("text-decoration", "underline")
 
   info_value.append("text")
             .attr("x", 5)
-            .attr("y", 65)
-            .text("People Using the Internet:")
+            .attr("y", 115)
+            .text("People using the Internet:")
             .attr("font-size", 14)
 
   info_value.append("text")
-            .attr("x", 5)
-            .attr("y", 80)
+            .attr("x", 155)
+            .attr("y", 115)
             .attr("id", "info_usage")
             .attr("font-size", 14)
             .attr("text-decoration", "underline")
-
-
-
-
-
-
-
 
   //Panning the map
   var panning = 30;
@@ -755,14 +967,14 @@ var drawMap = function(geoData)
   var zoom = d3.zoom()
                .on("zoom", zooming);
 
-  var center = projection([40, 34]);
+  var center = [screen.width/2, screen.height/2];
   //console.log(center);
 
   var map = svg.append("g")
                .attr("id", "zoomingMap")
                .call(zoom)
                .call(zoom.transform, d3.zoomIdentity
-                   .translate(screen.width/2 + 25, screen.height/2 + 50)
+                   .translate(screen.width/2 + 25, screen.height/2 + 60)
                    .scale(0.115)
                    .translate(-center[0], -center[1]));
 
