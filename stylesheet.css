@@ -2,6 +2,7 @@ svg{
   border: 5px solid #931621;
   margin:auto;
   display: block;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.4);
 }
 
 .pan:hover, .zoom:hover{
@@ -16,10 +17,7 @@ svg{
 .zoom rect {
   fill: #931621;
 	opacity: 0.2;
-}
-
-.zoom rect {
-	rx: 5;
+  rx: 5;
 	ry: 5;
 }
 
@@ -31,7 +29,6 @@ svg{
 
 path:hover{
   stroke-width: 2.5px;
-  cursor: pointer;
 }
 
 svg text{
@@ -50,17 +47,23 @@ svg text{
   left: 130px;
   background-color: #ead3d5;
   padding-right: 26px;
-  border-radius: 6px;
+  border-radius: 5px;
   border: none;
   color: black;
   font-weight: bold;
   margin: 0;
   padding: 0 12px;
-  width: 65px;
+  width: 62px;
   cursor: pointer;
   height: 30px;
+  font-family: Georgia, serif;
+  font-size: 13px;
 }
 
 #play-button:hover {
   background-color: #d8afb4;
+}
+
+.circles {
+  cursor: pointer;
 }
