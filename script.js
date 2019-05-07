@@ -109,8 +109,11 @@ var drawMap = function(geoData)
              d3.select("#info_country")
                 .text(d.properties.name);
 
-             d3.select("#info_year")
-               .text("1989");
+            d3.select("#info_year")
+              .text(function() {
+                var current_year = d3.select("#year_label").text();
+                return current_year;
+              });
 
             //console.log(d.properties.GDP);
             if (d.properties.GDP == undefined || d.properties.GDP.Y1989 == "") {
@@ -214,7 +217,10 @@ var drawMap = function(geoData)
                .text(d.properties.name);
 
             d3.select("#info_year")
-              .text("1989");
+              .text(function() {
+                var current_year = d3.select("#year_label").text();
+                return current_year;
+              });
 
            //console.log(d.properties.GDP);
            if (d.properties.GDP.Y1989 == "") {
@@ -305,6 +311,7 @@ var drawMap = function(geoData)
       //var button = d3.select("#play-button-text");
       var year = d3.select("#year_label");
       if (year.text() == "2016") {
+        //d3.select("#info_year").text("2016")
         timesRun = 0;
       }
       var buttonId = document.getElementsByClassName("play-button")[0].id;
