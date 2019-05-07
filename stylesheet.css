@@ -5,16 +5,16 @@ svg{
   box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
 }
 
-.pan:hover, .zoom:hover, #play-button{
+.pan:hover, .zoom:hover{
   cursor: pointer;
 }
 
-.pan rect:hover, .zoom rect:hover, .zoom text:hover, #play-button rect:hover, #play-button text:hover{
+.pan rect:hover, .zoom rect:hover, .zoom text:hover{
 	opacity: 0.4;
   transition: 0.08s;
 }
 
-.zoom rect, #play-button rect {
+.zoom rect{
   fill: #931621;
 	opacity: 0.2;
   rx: 5;
@@ -42,22 +42,24 @@ svg text{
   font-family: Georgia, serif;
 }
 
-#play-button:hover {
-  background-color: #d8afb4;
-}
-
 .title {
   font-size: 25px;
   font-weight: bold;
   text-align: center;
   margin-bottom: 1%;
+  margin-top: 1%;
+  font-family: Georgia, serif;
 }
 
 .info_box {
   border: 1px solid grey;
-  position: relative;
+  /* position: relative;
   top: -188px;
   /* left: -520px;  */
-  left: -483px;
+  left: -483px; */
   padding: 2px;
 }
+
+ .play-button:hover {
+   cursor: pointer;
+ }

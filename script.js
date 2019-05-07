@@ -162,13 +162,13 @@ var drawMap = function(geoData)
                      .domain([0, 185153])
                      .range([0, 120]);
 
-  countries.append("text")
-          .attr("id", function(d) {return "circle" + d.properties.iso_a3 + "Text";})
-          .text("")
-          .attr("font-style", "italic")
-          .attr("font-weight", "bold")
-          .attr("font-size", 14)
-          .attr("font-family", "Georgia, serif")
+  // countries.append("text")
+  //         .attr("id", function(d) {return "circle" + d.properties.iso_a3 + "Text";})
+  //         .text("")
+  //         .attr("font-style", "italic")
+  //         .attr("font-weight", "bold")
+  //         .attr("font-size", 14)
+  //         .attr("font-family", "Georgia, serif")
 
   countries.append("circle")
            .attr("class", "circles")
@@ -188,10 +188,26 @@ var drawMap = function(geoData)
              var x = coordinates[0];
              var y = coordinates[1];
 
-             d3.select("#circle" + d.properties.iso_a3 + "Text")
+             svg.append("text")
+                .attr("id", "circle" + d.properties.iso_a3 + "Text")
                 .attr("x", x)
                 .attr("y", y)
-                .text(d.properties.name + ": $" + Math.round(d.properties.GDP.Y1989));
+                .text(d.properties.name + ": $" + Math.round(d.properties.GDP.Y1989))
+                .attr("font-style", "italic")
+                .attr("font-weight", "bold")
+                .attr("font-size", 14)
+                .attr("font-family", "Georgia, serif");
+
+             // d3.select(this)
+             //   .append("text")
+             //   .attr("id", "#circle" + d.properties.iso_a3 + "Text")
+             //   .attr("x", x)
+             //   .attr("y", y)
+             //   .text(d.properties.name + ": $" + Math.round(d.properties.GDP.Y1989));
+             // d3.select("#circle" + d.properties.iso_a3 + "Text")
+             //    .attr("x", x)
+             //    .attr("y", y)
+             //    .text(d.properties.name + ": $" + Math.round(d.properties.GDP.Y1989));
 
            //info_box
             d3.select("#info_country")
@@ -223,7 +239,7 @@ var drawMap = function(geoData)
             }
            })
            .on("mouseout", function(d, i) {
-             d3.select("#circle" + d.properties.iso_a3 + "Text").text("");
+             d3.select("#circle" + d.properties.iso_a3 + "Text").remove();
            });
 
   // var color = d3.scaleQuantize()
@@ -263,34 +279,40 @@ var drawMap = function(geoData)
 
   var timesRun = 0;
 
-  var button = svg.append("g")
-                  .attr("id", "play-button")
-                  .attr("transform", "translate(" + (screen.width - 1250) +"," + (screen.height - 600) + ")");
+  var button = svg.append("svg:image")
+                  .attr("xlink:href", "icons/play.png")
+                  .attr("class", "play-button")
+                  .attr("id", "play")
+                  .attr("width", 40)
+                  .attr("transform", "translate(50, 50)");
 
-  button.append("rect")
-        .attr("x", 0)
-        .attr("y", 0)
-        .attr("width", 60)
-        .attr("height", 30);
+  // button.append("rect")
+  //       .attr("x", 0)
+  //       .attr("y", 0)
+  //       .attr("width", 60)
+  //       .attr("height", 30);
+  //
+  // button.append("text")
+  //       .attr("id", "play-button-text")
+  //       .attr("x", 16)
+  //       .attr("y", 20)
+  //       .text("Play")
+  //       .attr("font-weight", "bold");
 
-  button.append("text")
-        .attr("id", "play-button-text")
-        .attr("x", 16)
-        .attr("y", 20)
-        .text("Play")
-        .attr("font-weight", "bold");
-
-  d3.select("#play-button")
+  d3.select(".play-button")
     .on("click", function() {
-      var button = d3.select("#play-button-text");
+      var button = d3.select(this);
+      //var button = d3.select("#play-button-text");
       var year = d3.select("#year_label");
       if (year.text() == "2016") {
         timesRun = 0;
       }
-      if (button.text() == "Pause") {
+      var buttonId = document.getElementsByClassName("play-button")[0].id;
+      //console.log(buttonId);
+
+      if (buttonId == "pause") {
         clearInterval(timer);
-        button.text("Play")
-              .attr("x", 16);
+        button.attr("id", "play").attr("xlink:href", "icons/play.png");
       //   var baseYear = 1990;
       //   var currentYear_i = baseYear + timesRun;
       //   var currentYear = "Y" + currentYear_i.toString();
@@ -312,12 +334,10 @@ var drawMap = function(geoData)
           timesRun += 1;
           if (timesRun == 27) {
             clearInterval (timer);
-            button.text("Replay")
-                  .attr("x", 7);
+            button.attr("id", "replay").attr("xlink:href", "icons/replay.png");
           }
         }, 500);
-        button.text("Pause")
-              .attr("x", 11);
+        button.attr("id", "pause").attr("xlink:href", "icons/pause.png");
       }
     })
 
@@ -565,16 +585,20 @@ var drawMap = function(geoData)
                         .attr("class", "label");
 
   legend_title.append("text")
-              .attr("x", 1165)
-              .attr("y", 68)
+              .attr("x", 1160)
+              .attr("y", 62)
               .text("% of People")
-              .attr("font-size", 14);
+              .attr("font-style", "italic")
+              .attr("font-size", 15)
+              .attr("font-weight", "bold");
 
   legend_title.append("text")
-              .attr("x", 1148)
-              .attr("y", 85)
+              .attr("x", 1142)
+              .attr("y", 80)
               .text("Using the Internet")
-              .attr("font-size", 14);
+              .attr("font-style", "italic")
+              .attr("font-size", 15)
+              .attr("font-weight", "bold");
 
   var colorSet = ["#F9F0DE","#fbe6c5","#f5ba98","#ee8a82","#dc7176","#c8586c","#9c3f5d","#70284a", "#d3d3d3"];
   var description = ["< 12.5","12.5 - 25","25 - 37.5","37.5 - 50", "50 - 62.5", "62.5 - 75", "75 - 87.5", "> 87.5", "Undefined"];
@@ -585,25 +609,28 @@ var drawMap = function(geoData)
          .data(colorSet)
          .enter()
          .append("rect")
-         .attr("x", 1165)
+         .attr("x", 1162)
          .attr("y", function(d, i) {return 100 + i*20;})
-         .attr("width", 10)
-         .attr("height", 10)
+         .attr("width", 10.5)
+         .attr("height", 10.5)
          .attr("fill", function(d) {return d;});
 
   legend.selectAll("text")
         .data(description)
         .enter()
         .append("text")
-        .attr("x", 1185)
+        .attr("x", 1182)
         .attr("y", function(d, i) {return 110 + i*20})
         .text(function(d) {return d;})
-        .attr("font-size", 14);
+        .attr("font-size", 15)
+        .attr("font-style", "italic")
+        .attr("font-weight", "bold");
 
   var info_box = d3.select("body").append("div").append("svg")
       .attr('width', 230)
       .attr('height', 125)
       .attr('class', 'info_box')
+      .attr("transform", "translate(-480, -185)");
 
   var info_value = info_box.append("g");
 
@@ -874,28 +901,37 @@ var drawMap = function(geoData)
     .on("click", function(d)
     {
       var offset = projection.translate(); //get current translation offset
-      var moveAmount = 90; //how much to move on each click
+      var moveAmount = 80; //how much to move on each click
       var direction = d3.select(this).attr("id"); //which Norway
+
+      // var x = 0;
+			// var y = 0;
 
       switch(direction)
       {
         case "north":
             offset[1] += moveAmount;
+            //y += moveAmount;
             break;
         case "south":
             offset[1] -= moveAmount;
+            //y -= moveAmount;
             break;
         case "west":
             offset[0] += moveAmount;
+            //x += moveAmount;
             break;
         case "east":
             offset[0] -= moveAmount;
+            //x -= moveAmount;
             break;
         default:
             break;
       }
 
       projection.translate(offset);
+      // map.transition()
+			// 	 .call(zoom.translateBy, x, y);
 
       svg.selectAll("path")
          .transition()
@@ -922,10 +958,10 @@ var drawMap = function(geoData)
   //      .transition()
   //      .attr("d", countryGenerator);
   //
-  //   svg.selectAll("#countryAbbrev")
-  //      .transition()
-  //      .attr("x", function(d) {return countryGenerator.centroid(d)[0];})
-  //      .attr("y", function(d) {return countryGenerator.centroid(d)[1];})
+  //  svg.selectAll("circle")
+  //     .transition()
+  //     .attr("cx", function(d) {return countryGenerator.centroid(d)[0];})
+  //     .attr("cy", function(d) {return countryGenerator.centroid(d)[1];})
   // }
   //
   // var drag = d3.drag()
@@ -942,7 +978,7 @@ var drawMap = function(geoData)
   //    .attr("height", screen.height - panning * 2)
   //    .attr("opacity", 0)
   //    .attr("cursor", "move");
-  //
+  // //
   //zooming the map
   var zooming = function(d) {
     //console.log(d3.event.transform);
@@ -965,6 +1001,8 @@ var drawMap = function(geoData)
   }
 
   var zoom = d3.zoom()
+               // .scaleExtent([ 0.2, 2.0 ])
+               // .translateExtent([[ -1200, -700 ], [ 1200, 700 ]])
                .on("zoom", zooming);
 
   var center = [screen.width/2, screen.height/2];
