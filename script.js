@@ -585,7 +585,7 @@ var drawMap = function(geoData)
                         .attr("class", "label");
 
   legend_title.append("text")
-              .attr("x", 1160)
+              .attr("x", 1162)
               .attr("y", 62)
               .text("% of People")
               .attr("font-style", "italic")
